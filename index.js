@@ -13,7 +13,7 @@ const adicionarAluno = (nome) => {
     }
 
     alunosDaEscola.push(novoAluno)
-    console.log(`Aluno cadastrado com sucesso!`)
+    console.log(`Aluno ${nome} cadastrado com sucesso!`)
     console.log("")
 }
 
@@ -22,50 +22,85 @@ const adicionarAluno = (nome) => {
 const listarAlunos = () => {
     let contador = 0
     console.log(`Alunos cadastrados no sistema:`)
-
-
     for(aluno of alunosDaEscola){ 
+        
+        let curso = ""
+        let cursoData=""
+        let novoCurso = aluno.cursos
+
+
+        if (novoCurso.length > 0){
+            curso = novoCurso[0].nomeDoCurso;
+            cursoData =  novoCurso[0].dataMatricula;
+        }
+
+        console.log("")
         console.log(`Aluno ${++contador}`)
         console.log(`Nome: ${aluno.nome}`)
+        
         if(aluno.cursos == ""){
             console.log("Cursos: Nenhum curso encontrado em nossos registros!")
             console.log("Notas: N/A")
+
         }else{
-            console.log("Cursos:", aluno.cursos)
+            console.log(`Cursos:`)
+            console.log(`   Nome do curso: ${curso}`)
+            console.log(`   Data de matrícula: ${cursoData}`)
             console.log(`Notas: ${aluno.notas}`)
         }
         
         console.log(`Faltas: ${aluno.faltas}`)
         console.log("")
     }
-    
-    console.log("")
 }
 
 
 // BUSCANDO UM ALUNO
 const buscarAluno = nome => {
+    // VARIÁVEIS PARA ARMAZENAR OS DADOS DO curso, RESOLVENDO O BUG DO "UNDEFINED"
+    let temp = ""
+    let curso = ""
+    let dataMatricula = ""
+    let tempAluno = ""
 
     let alunoEncontrado = []
     let contador = 0
 
+
     for(aluno of alunosDaEscola){
+
         if(aluno.nome == nome){
             alunoEncontrado.push(aluno)
             contador ++
+            
+            if(aluno.cursos != ""){
+                temp = aluno
+                tempAluno = aluno.cursos
+                nomeCurso = tempAluno[0].nomeDoCurso
+                data = tempAluno[0].dataMatricula
+            }
         } 
     }
-    
+
+
+
     if (contador <= 0 ){
         console.log("Aluno não encontrado")
     } else{
         console.log(`Número de aluno(s) encontrado(s): ${contador}`)
-        for(let i of alunoEncontrado){
+        for( aluno of alunoEncontrado){
             console.log("")
             console.log(`Aluno encontrado:`)
-            console.log(`Nome: ${i.nome}`)
-            console.log("Cursos: ", i.cursos)
-            console.log(`Faltas: ${i.faltas}`)
+            console.log(`Nome: ${aluno.nome}`)
+            if(aluno.cursos == ""){
+                console.log("Cursos: Nenhum curso encontrado em nossos registros!")
+            }else{
+                console.log("Cursos:")
+                console.log(`   Nome do curso: ${nomeCurso}`)
+                console.log(`   Data de matrícula: ${data}`)
+                console.log(`Notas: ${aluno.notas}`)
+            }
+            console.log(`Faltas: ${aluno.faltas}`)
         }
     }
     console.log("")
@@ -92,7 +127,7 @@ const matricularAluno = (aluno, curso) => {
     }
 
     if(contador <= 0){
-        console.log("AÇÃO NÃO PERMITIDA! Não é possível cadastrar um aluno que não faz parte da nossa escola. Tente novamente utilizando um aluno matriculado na instituição.")
+        console.log(`AÇÃO NÃO PERMITIDA! ${aluno} não faz parte do quadro de alunos da escola! Tente novamente utilizando um aluno matriculado na instituição.`)
     }
     console.log("")
 }
@@ -100,20 +135,27 @@ const matricularAluno = (aluno, curso) => {
 
 // APLICANDO FALTA PRO ALUNO
 const aplicarFalta = (aluno) => {
-    let contador = 0;
+    let contador = 0
+
+
     for(let i = 0; i < alunosDaEscola.length; i++){
         if(alunosDaEscola[i].nome === aluno){
             if(alunosDaEscola[i].cursos != ""){
                 alunosDaEscola[i].faltas++
                 console.log(`Falta atribuida ao aluno: ${alunosDaEscola[i].nome}`)
                 contador++
+            }else{
+                console.log(`AÇÃO NÃO PERMITIDA! Não é possível aplicar uma falta para ${aluno} pois o mesmo não está matriculado em nenhum curso!`)
+                contador++
             }
         }  
     }      
     
-    if(contador <= 0){
-        console.log("AÇÃO NÃO PERMITIDA! Não é possível aplicar falta à um aluno que não está fazendo nenhum curso!")
-    }
+
+    if(contador <= 0 ){
+        console.log(`AÇÃO NÃO PERMITIDA! ${aluno} não faz parte do quadro de alunos da escola!`)
+    } 
+       
     console.log("")
 }
 
@@ -126,28 +168,61 @@ const aplicarNota = (aluno, nota) => {
             if(alunosDaEscola[i].cursos != ""){
                 temp.push(nota)
                 alunosDaEscola[i].notas.push(temp)
-                console.log(`Nota atribuída com sucesso! Dados atualizados do aluno: `)
-                console.log(`Nome do Aluno: ${alunosDaEscola[i].nome}`)
-                console.log("Cursos: ", alunosDaEscola[i].cursos)
-                console.log(`Notas do aluno: ${alunosDaEscola[i].notas}`)
-                console.log(`Faltas do aluno: ${alunosDaEscola[i].faltas}`)
+                console.log(`Nota ${nota} atribuída com sucesso!`)
+                contador++
+            }else{
+                console.log(`AÇÃO NÃO PERMITIDA! O aluno ${aluno} não está fazendo nenhum curso!`)
                 contador++
             }
         }
     }
     if(contador <= 0){
-        console.log("AÇÃO NÃO PERMITIDA! Não é possível atribuir uma nota à um aluno que não está fazendo nenhum curso ou que não faz parte da escola!")
+        console.log(`AÇÃO NÃO PERMITIDA! ${aluno} não faz parte do quadro de alunos da escola!`)
     }
 }
 
 
-
-// APROVANDO UM ALUNO
+// APROVANDO UM ALUNO - PENDENTE!
 const aprovarAluno = (aluno) => {
     
 }
 
-// TESTES DE VALIDAÇÃO 
-// adicionarAluno("Daniel Vieira")
-// matricularAluno("Daniel Vieira", "Santander Coders - Digital House")
+
+
+
+
+
+
+// TESTES DE VALIDAÇÃO
+
+
+// adicionarAluno("Daniel")
 // listarAlunos()
+// matricularAluno("Daniel", "Santander Coders - By Digital House")
+// buscarAluno("Daniel")
+// aplicarFalta("Daniel")
+// aplicarNota("Daniel", 10)
+// buscarAluno("Daniel")
+
+
+
+// //TENTANDO MATRICULAR UM ALUNO QUE NÃO ESTÁ CADASTRADO NA LISTA DE ALUNOS
+// matricularAluno("Breno", "Machine Learning")
+
+// //BUSCANDO UM ALUNO QUE NÃO FAZ PARTE DA ESCOLA
+// buscarAluno("Breno")
+
+// //APLICANDO FALTA A UM ALUNO QUE NÃO FAZ PARTE DA ESCOLA
+// aplicarFalta("Breno")
+
+// //APLICANDO FALTA A UM ALUNO QUE FAZ PARTE DA ESCOLA MAS NÃO ESTÁ MATRICULADO EM NENHUM CURSO
+// aplicarFalta("Henrique")
+
+
+// // APLICANDO NOTA A UM ALUNO QUE NÃO FAZ PARTE DA ESCOLA
+// aplicarNota("Breno", 10)
+
+// //APLICANDO NOTA A UM ALUNO QUE FAZ PARTE DA ESCOLA MAS NÃO ESTÁ MATRICULADO EM NENHUM CURSO
+// aplicarFalta("Henrique")
+
+
