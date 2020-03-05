@@ -2,8 +2,9 @@
 const alunosDaEscola=[{nome:"Henrique",notas:[],cursos:[],faltas:5},{nome:"Edson",notas:[],cursos:[],faltas:2},{nome:"Bruno",notas:[10,9.8,9.6],cursos:[],faltas:0},{nome:"Guilherme",notas:[10,9.8,9.6],cursos:[{nomeDoCurso:"Full Stack",dataMatricula:new Date}],faltas:0},{nome:"Carlos",notas:[],cursos:[],faltas:0},{nome:"Lucca",notas:[10,9.8,9.6],cursos:[{ nomeDoCurso: "UX", dataMatricula: new Date}],faltas:0}]
 
 
-// ADICIONANDO UM ALUNO
 
+
+// ADICIONANDO UM ALUNO
 const adicionarAluno = (nome) => {
     let novoAluno = {
         nome: nome,
@@ -18,14 +19,13 @@ const adicionarAluno = (nome) => {
 }
 
 // LISTANDO ALUNOS
-
 const listarAlunos = () => {
     let contador = 0
     console.log(`Alunos cadastrados no sistema:`)
     for(aluno of alunosDaEscola){ 
         
-        let curso = ""
-        let cursoData=""
+        let curso 
+        let cursoData
         let novoCurso = aluno.cursos
 
 
@@ -58,10 +58,10 @@ const listarAlunos = () => {
 // BUSCANDO UM ALUNO
 const buscarAluno = nome => {
     // VARIÁVEIS PARA ARMAZENAR OS DADOS DO curso, RESOLVENDO O BUG DO "UNDEFINED"
-    let temp = ""
-    let curso = ""
-    let dataMatricula = ""
-    let tempAluno = ""
+    let temp 
+    let curso 
+    let dataMatricula 
+    let tempAluno 
 
     let alunoEncontrado = []
     let contador = 0
@@ -115,7 +115,7 @@ const matricularAluno = (aluno, curso) => {
         dataMatricula: ""
     }
 
-
+    // VERIFICANDO SE O ALUNO FAZ PARTE DA LISTA DE ALUNOS DA ESCOLA 
     for(let i = 0; i < alunosDaEscola.length; i++){
         if(alunosDaEscola[i].nome == aluno){
             temp.nomeDoCurso = curso
@@ -139,6 +139,8 @@ const aplicarFalta = (aluno) => {
 
 
     for(let i = 0; i < alunosDaEscola.length; i++){
+
+        // VERIFICANDO SE O ALUNO FAZ PARTE DA LISTA DE ALUNOS DA ESCOLA E SE ELE ESTÁ MATRICULADO EM ALGUM CURSO
         if(alunosDaEscola[i].nome === aluno){
             if(alunosDaEscola[i].cursos != ""){
                 alunosDaEscola[i].faltas++
@@ -162,13 +164,15 @@ const aplicarFalta = (aluno) => {
 // APLICANDO UMA NOTA PRO ALUNO
 const aplicarNota = (aluno, nota) => {
     let contador = 0
-    let temp = []
+    let temp
+
+    // VERIFICANDO SE O ALUNO FAZ PARTE DA LISTA DE ALUNOS DA ESCOLA E SE ELE ESTÁ MATRICULADO EM ALGUM CURSO
     for(let i = 0; i < alunosDaEscola.length; i++){
         if(alunosDaEscola[i].nome === aluno){
             if(alunosDaEscola[i].cursos != ""){
-                temp.push(nota)
+                temp = nota
                 alunosDaEscola[i].notas.push(temp)
-                console.log(`Nota ${nota} atribuída com sucesso!`)
+                console.log(`Nota ${nota} atribuída para: ${aluno}`)
                 contador++
             }else{
                 console.log(`AÇÃO NÃO PERMITIDA! O aluno ${aluno} não está fazendo nenhum curso!`)
@@ -182,47 +186,49 @@ const aplicarNota = (aluno, nota) => {
 }
 
 
-// APROVANDO UM ALUNO - PENDENTE!
+// APROVANDO UM ALUNO
 const aprovarAluno = (aluno) => {
-    
+    let faltas
+    let notas
+    let media
+    let contador = 0
+    let alunoNaoEncontrado
+ 
+
+    // VERIFICANDO SE O ALUNO FAZ PARTE DA LISTA DE ALUNOS DA ESCOLA E SE ELE ESTÁ MATRICULADO EM ALGUM CURSO
+    for(let i = 0; i < alunosDaEscola.length; i++){
+        if(alunosDaEscola[i].nome === aluno && alunosDaEscola[i].cursos.length > 0){
+            notas = alunosDaEscola[i].notas
+            faltas = alunosDaEscola[i].faltas
+            contador ++      
+        }else if (alunosDaEscola[i].nome === aluno && alunosDaEscola[i].cursos.length <= 0){
+            contador --
+        }else{
+            alunoNaoEncontrado = true
+        }
+
+    }
+
+    // VERIFICANDO O CONTADOR PARA PODER CALCULAR A MÉDIA DO ALUNO
+    if(contador > 0){
+        media = notas.reduce((acumulador, atual) => acumulador + atual) / notas.length
+    } else if(contador < 0){
+        media = 0
+    }
+
+
+    // EMITINDO INFORMAÇÕES PARA O USUÁRIO DE ACORDO COM A REGRA DE NEGÓCIOS
+
+    if(media >= 7 && faltas <= 3){
+        console.log(`O aluno ${aluno} foi aprovado com média ${media.toFixed(2)}!`)
+    }else if(media >= 7 && faltas > 3){
+        console.log(`AÇÃO NÃO PERMITIDA! O aluno ${aluno} possui média acima de 7, mas suas faltas excedem o máximo permitido!`)
+    }else if(media < 7 && faltas <= 3){
+        console.log(`AÇÃO NÃO PERMITIDA! O aluno ${aluno} não atingiu média suficiente para ser aprovado!`)
+    } else if (media == 0){
+        console.log(`AÇÃO NÃO PERMITIDA! o aluno ${aluno} não está matriculado em nenhum curso!`)
+    }else if(alunoNaoEncontrado){
+        console.log(`AÇÃO NÃO PERMITIDA! ${aluno} não faz parte do quadro de alunos da escola!`)
+    }
+
 }
-
-
-
-
-
-
-
-// TESTES DE VALIDAÇÃO
-
-
-// adicionarAluno("Daniel")
-// listarAlunos()
-// matricularAluno("Daniel", "Santander Coders - By Digital House")
-// buscarAluno("Daniel")
-// aplicarFalta("Daniel")
-// aplicarNota("Daniel", 10)
-// buscarAluno("Daniel")
-
-
-
-// //TENTANDO MATRICULAR UM ALUNO QUE NÃO ESTÁ CADASTRADO NA LISTA DE ALUNOS
-// matricularAluno("Breno", "Machine Learning")
-
-// //BUSCANDO UM ALUNO QUE NÃO FAZ PARTE DA ESCOLA
-// buscarAluno("Breno")
-
-// //APLICANDO FALTA A UM ALUNO QUE NÃO FAZ PARTE DA ESCOLA
-// aplicarFalta("Breno")
-
-// //APLICANDO FALTA A UM ALUNO QUE FAZ PARTE DA ESCOLA MAS NÃO ESTÁ MATRICULADO EM NENHUM CURSO
-// aplicarFalta("Henrique")
-
-
-// // APLICANDO NOTA A UM ALUNO QUE NÃO FAZ PARTE DA ESCOLA
-// aplicarNota("Breno", 10)
-
-// //APLICANDO NOTA A UM ALUNO QUE FAZ PARTE DA ESCOLA MAS NÃO ESTÁ MATRICULADO EM NENHUM CURSO
-// aplicarFalta("Henrique")
-
-
